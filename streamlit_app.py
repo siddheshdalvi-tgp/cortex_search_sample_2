@@ -6,6 +6,16 @@ st.title("🔍 Snowflake Connectivity Test")
 
 st.write("Attempting to connect to Snowflake...")
 
+# Constants
+DB = "CORTEX_DEMO_DB"
+SCHEMA = "PUBLIC"
+SERVICE = "CUSTOMER_COMMENT_SEARCH"
+BASE_TABLE = "CORTEX_DEMO_DB.PUBLIC.CUSTOMER_DATA"
+
+ARRAY_ATTRIBUTES = set()  # No array attributes in this case
+
+session.sql("ALTER WAREHOUSE CORTEX_WH RESUME IF SUSPENDED").collect()
+
 try:
     sf = st.secrets["snowflake"]
     params = {
@@ -140,5 +150,6 @@ except Error as e:
     st.error(f"🚨 Snowflake Error: {e}")
 except Exception as e:
     st.error(f"⚠️ General Error: {type(e).__name__}: {e}")
+
 
 
