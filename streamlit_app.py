@@ -1,8 +1,8 @@
 import streamlit as st
 from snowflake.snowpark import Session
 from snowflake.connector.errors import Error
-from snowflake.core import Root
-from snowflake.snowpark.context import get_active_session
+#from snowflake.core import Root
+#from snowflake.snowpark.context import get_active_session
 from snowflake.snowpark import Session
 
 st.title("🔍 Snowflake Connectivity Test")
@@ -55,21 +55,17 @@ try:
     
     
     def query_cortex_search_service(query, filter_object={}):
-        # session = get_active_session()
-        cortex_service = (
-            snowflake.core.Root(session)
-            .databases[DB]
-            .schemas[SCHEMA]
-            .cortex_search_services[SERVICE]
-        )
-    
-        docs = cortex_service.search(
-            query,
-            columns=st.session_state.columns,
-            filter=filter_object,
-            limit=st.session_state.limit
-        )
-        return docs.results
+        filter_json = filter_object if filter_object else {}
+        sql = f"""
+            SELECT *
+            FROM CORTEX_SEARCH_SEARCH(
+                '{DB}.{SCHEMA}.{SERVICE}',
+                '{query}',
+                PARSE_JSON('{str(filter_json)}'),
+                {st.session_state.limit}
+            )
+        """
+        return session.sql(sql).collect()
     
     
     @st.cache_data
@@ -153,6 +149,7 @@ except Error as e:
     st.error(f"🚨 Snowflake Error: {e}")
 except Exception as e:
     st.error(f"⚠️ General Error: {type(e).__name__}: {e}")
+
 
 
 
