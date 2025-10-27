@@ -4,34 +4,44 @@ from snowflake.core import Root
 from snowflake.snowpark.context import get_active_session
 from snowflake.snowpark import Session
 
-#@st.cache_resource(show_spinner=False)
+# Direct connection parameters (replace with your actual values)
+ACCOUNT = "ld31269.ap-south-1.aws"  # Fully qualified Snowflake account
+USER = "SIDDHESH3PILLARGLOBAL"
+PASSWORD = "YOUR_PASSWORD"
+ROLE = "CORTEX_APP_ROLE"
+WAREHOUSE = "CORTEX_WH"
+DATABASE = "CORTEX_DEMO_DB"
+SCHEMA = "PUBLIC"
+
+
+@st.cache_resource(show_spinner=False)
 def create_session():
-    session = Session.builder.configs({
-        "account": st.secrets["SNOWFLAKE_ACCOUNT"],
-        "user": st.secrets["SNOWFLAKE_USER"],
-        "password": st.secrets["SNOWFLAKE_PASSWORD"],
-        "role": st.secrets["SNOWFLAKE_ROLE"],
-        "warehouse": st.secrets["SNOWFLAKE_WH"],
-        "database": st.secrets["SNOWFLAKE_DB"],
-        "schema": st.secrets["SNOWFLAKE_SCHEMA"]
-    }).create()
-    return session
+    connection_params = {
+        "account": ACCOUNT,
+        "user": USER,
+        "password": PASSWORD,
+        "role": ROLE,
+        "warehouse": WAREHOUSE,
+        "database": DATABASE,
+        "schema": SCHEMA
+    }
+    return Session.builder.configs(connection_params).create()
+
 
 session = create_session()
 
 # Constants
-DB = "CORTEX_DEMO_DB"
-SCHEMA = "PUBLIC"
+DB = DATABASE
+SCHEMA = SCHEMA
 SERVICE = "CUSTOMER_COMMENT_SEARCH"
-BASE_TABLE = "CORTEX_DEMO_DB.PUBLIC.CUSTOMER_DATA"
+BASE_TABLE = f"{DB}.{SCHEMA}.CUSTOMER_DATA"
 
 ARRAY_ATTRIBUTES = set()  # No array attributes in this case
 
 session.sql("ALTER WAREHOUSE CORTEX_WH RESUME IF SUSPENDED").collect()
 
+
 def get_column_specification():
-    #session = get_active_session()
-    # session = create_session()
     result = session.sql(
         f"DESC CORTEX SEARCH SERVICE {DB}.{SCHEMA}.{SERVICE}"
     ).collect()[0]
@@ -112,32 +122,4 @@ def create_filter_object(attributes):
     for col, values in attributes.items():
         if values:
             or_values = [{"@eq": {col: v}} for v in values]
-            clauses.append({"@or": or_values})
-
-    if clauses:
-        return {"@and": clauses}
-    return {}
-
-
-def main():
-    init_layout()
-    get_column_specification()
-    init_attribute_selection()
-    init_limit_input()
-    init_search_input()
-
-    if not st.session_state.query:
-        return
-
-    results = query_cortex_search_service(
-        st.session_state.query,
-        filter_object=create_filter_object(st.session_state.attributes)
-    )
-    display_search_results(results)
-
-
-if __name__ == "__main__":
-    st.set_page_config(page_title="Cortex AI Search", layout="wide")
-    main()
-
-
+            clauses.append({"
