@@ -54,7 +54,7 @@ try:
     def query_cortex_search_service(query, filter_object={}):
         # session = get_active_session()
         cortex_service = (
-            Root(session)
+            snowflake.core.Root(session)
             .databases[DB]
             .schemas[SCHEMA]
             .cortex_search_services[SERVICE]
@@ -150,6 +150,7 @@ except Error as e:
     st.error(f"🚨 Snowflake Error: {e}")
 except Exception as e:
     st.error(f"⚠️ General Error: {type(e).__name__}: {e}")
+
 
 
 
