@@ -4,14 +4,21 @@ from snowflake.snowpark import Session
 # --- The connection Name is: "my_example_connection" ---
 CONNECTION_NAME = "my_example_connection"
 
-@st.cache_resource(show_spinner="Connecting to Snowflake...")
+@st.cache_resource(show_spinner=False)
 def create_session():
-    # Use st.connection() to securely retrieve the configuration
-    conn = st.connection(CONNECTION_NAME)
+    # Read the whole [snowflake] section
+    secrets = st.secrets["snowflake"]
     
-    # st.connection automatically handles the underlying connection based on the secrets.toml
-    # For Snowpark, you can get the Snowpark Session object directly
-    return conn.session
+    connection_params = {
+        "account": secrets["account"],  # Accesses the 'account' key from the 'snowflake' section
+        "user": secrets["user"],
+        "password": secrets["password"],
+        "role": secrets["role"],
+        "warehouse": secrets["warehouse"],
+        "database": secrets["database"],
+        "schema": secrets["schema"]
+    }
+    return Session.builder.configs(connection_params).create()
 
 try:
     # 1. Create the session
@@ -33,3 +40,4 @@ if session:
     st.header("Example Query")
     df = session.sql("SELECT * FROM SNOWFLAKE.ACCOUNT_USAGE.TABLE_STORAGE_MONTHLY ORDER BY USAGE_DATE DESC LIMIT 5").to_pandas()
     st.dataframe(df)
+
