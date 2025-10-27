@@ -1,43 +1,30 @@
-# ⚠️ WARNING: DO NOT USE THIS FOR PRODUCTION. This file now demonstrates 
-# how to use 'externalbrowser' authentication, which is safer than hardcoding a password.
+# Import python packages
 import streamlit as st
 from snowflake.snowpark import Session
 
-st.title("Snowpark Connection Test (Hardcoded Credentials - Using External Browser)")
-
-# Hardcoded credentials
-ACCOUNT = "ld31269.ap-south-1"
-USER = "SIDDHESH3PILLARGLOBAL"
-# ⚠️ Removed PASSWORD for externalbrowser authentication (It is not needed)
-ROLE = "CORTEX_APP_ROLE"
-WAREHOUSE = "CORTEX_WH"
-DATABASE = "CORTEX_DEMO_DB"
-SCHEMA = "PUBLIC"
-
-@st.cache_resource(show_spinner="Connecting to Snowflake...")
-def create_hardcoded_session():
+@st.cache_resource(show_spinner=False)
+def create_session():
+    # Access credentials from st.secrets
+    secrets = st.secrets["snowflake"]
+    
     connection_params = {
-        "account": ACCOUNT,
-        "user": USER,
-        # 💡 Add the authenticator parameter for secure login flow
-        "authenticator": "externalbrowser",
-        "role": ROLE,
-        "warehouse": WAREHOUSE,
-        "database": DATABASE,
-        "schema": SCHEMA
+        "account": secrets["account"],
+        "user": secrets["user"],
+        "password": secrets["password"],
+        "role": secrets["role"],
+        "warehouse": secrets["warehouse"],
+        "database": secrets["database"],
+        "schema": secrets["schema"]
     }
-    # This will work, but is unsafe
     return Session.builder.configs(connection_params).create()
 
-# --- Main Logic ---
+# The rest of your app logic remains the same
+session = create_session()
 
-st.info("A browser window may open asking you to log into Snowflake. Please authorize the connection there.")
-
+# ✅ Test Connection
 try:
-    session = create_hardcoded_session()
-    session.sql("SELECT CURRENT_USER()").collect()
-    st.success("✅ Snowflake connection successful with external browser authentication!")
-    st.warning("⚠️ SECURITY NOTE: The credentials are still hardcoded, but external browser authentication is generally more robust than a static password.")
+    session.sql("SELECT CURRENT_USER(), CURRENT_ACCOUNT()").collect()
+    st.success("✅ Snowflake connection successful (using st.secrets)!")
 except Exception as e:
     st.error("❌ Snowflake connection failed!")
-    st.exception(e)
+    st.error(e)
