@@ -2,35 +2,29 @@
 import streamlit as st
 from snowflake.snowpark import Session
 
-# Hardcoded credentials instead of secrets
-ACCOUNT = "OBIMSEL-PZ16899"
-USER = "SIDDHESH3PILLARGLOBAL"
-PASSWORD = "QwertyQwerty@456"
-ROLE = "CORTEX_APP_ROLE"
-WAREHOUSE = "CORTEX_WH"
-DATABASE = "CORTEX_DEMO_DB"
-SCHEMA = "PUBLIC"
-
 @st.cache_resource(show_spinner=False)
 def create_session():
+    # Access credentials from st.secrets
+    secrets = st.secrets["snowflake"]
+    
     connection_params = {
-        "account": ACCOUNT,
-        "user": USER,
-        "password": PASSWORD,
-        "role": ROLE,
-        "warehouse": WAREHOUSE,
-        "database": DATABASE,
-        "schema": SCHEMA
+        "account": secrets["account"],
+        "user": secrets["user"],
+        "password": secrets["password"],
+        "role": secrets["role"],
+        "warehouse": secrets["warehouse"],
+        "database": secrets["database"],
+        "schema": secrets["schema"]
     }
     return Session.builder.configs(connection_params).create()
 
+# The rest of your app logic remains the same
 session = create_session()
 
 # ✅ Test Connection
 try:
     session.sql("SELECT CURRENT_USER(), CURRENT_ACCOUNT()").collect()
-    st.success("✅ Snowflake connection successful!")
+    st.success("✅ Snowflake connection successful (using st.secrets)!")
 except Exception as e:
     st.error("❌ Snowflake connection failed!")
     st.error(e)
-
