@@ -17,6 +17,7 @@ try:
         "database": sf.get("database"),
         "schema": sf.get("schema")
     }
+
     session = Session.builder.configs(params).create()
     st.success("✅ Connected Successfully!")
 
@@ -26,4 +27,4 @@ try:
 except Error as e:
     st.error(f"🚨 Snowflake Error: {e}")
 except Exception as e:
-    st.error(f"⚠️ Gener
+    st.error(f"⚠️ General Error: {type(e).__name__}: {e}")
