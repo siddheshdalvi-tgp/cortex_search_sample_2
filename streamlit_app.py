@@ -4,20 +4,18 @@ from snowflake.core import Root
 from snowflake.snowpark.context import get_active_session
 from snowflake.snowpark import Session
 
-@st.cache_resource(show_spinner=False)
+#@st.cache_resource(show_spinner=False)
 def create_session():
-    connection_params = {
+    session = Session.builder.configs({
         "account": st.secrets["SNOWFLAKE_ACCOUNT"],
         "user": st.secrets["SNOWFLAKE_USER"],
         "password": st.secrets["SNOWFLAKE_PASSWORD"],
         "role": st.secrets["SNOWFLAKE_ROLE"],
         "warehouse": st.secrets["SNOWFLAKE_WH"],
         "database": st.secrets["SNOWFLAKE_DB"],
-        "schema": st.secrets["SNOWFLAKE_SCHEMA"],
-    }
-    return Session.builder.configs(connection_params).create()
-
-session = create_session()
+        "schema": st.secrets["SNOWFLAKE_SCHEMA"]
+    }).create()
+    return session
 
 # Constants
 DB = "CORTEX_DEMO_DB"
@@ -139,3 +137,4 @@ def main():
 if __name__ == "__main__":
     st.set_page_config(page_title="Cortex AI Search", layout="wide")
     main()
+
