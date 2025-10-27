@@ -13,8 +13,6 @@ SERVICE = "CUSTOMER_COMMENT_SEARCH"
 BASE_TABLE = "CORTEX_DEMO_DB.PUBLIC.CUSTOMER_DATA"
 
 ARRAY_ATTRIBUTES = set()  # No array attributes in this case
-session = Session.builder.configs(params).create()
-session.sql("ALTER WAREHOUSE CORTEX_WH RESUME IF SUSPENDED").collect()
 
 try:
     sf = st.secrets["snowflake"]
@@ -27,6 +25,8 @@ try:
         "database": sf.get("database"),
         "schema": sf.get("schema")
     }
+    session = Session.builder.configs(params).create()
+    session.sql("ALTER WAREHOUSE CORTEX_WH RESUME IF SUSPENDED").collect()
 
     # session = Session.builder.configs(params).create()
     st.success("✅ Connected Successfully!")
@@ -150,6 +150,7 @@ except Error as e:
     st.error(f"🚨 Snowflake Error: {e}")
 except Exception as e:
     st.error(f"⚠️ General Error: {type(e).__name__}: {e}")
+
 
 
 
