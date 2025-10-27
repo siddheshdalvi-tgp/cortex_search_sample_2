@@ -4,15 +4,14 @@ from snowflake.core import Root
 from snowflake.snowpark.context import get_active_session
 from snowflake.snowpark import Session
 
-# Direct connection parameters (replace with your actual values)
-ACCOUNT = "OBIMSEL-PZ16899.snowflakecomputing.com"  # Fully qualified Snowflake account
+# Hardcoded credentials instead of secrets
+ACCOUNT = "OBIMSEL-PZ16899"
 USER = "SIDDHESH3PILLARGLOBAL"
-PASSWORD = "YOUR_PASSWORD"
+PASSWORD = "QwertyQwerty@456"
 ROLE = "CORTEX_APP_ROLE"
 WAREHOUSE = "CORTEX_WH"
 DATABASE = "CORTEX_DEMO_DB"
 SCHEMA = "PUBLIC"
-
 
 @st.cache_resource(show_spinner=False)
 def create_session():
@@ -123,4 +122,5 @@ def create_filter_object(attributes):
         if values:
             or_values = [{"@eq": {col: v}} for v in values]
             clauses.append({"
+
 
