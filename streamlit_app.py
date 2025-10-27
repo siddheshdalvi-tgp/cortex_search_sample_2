@@ -41,6 +41,7 @@ session.sql("ALTER WAREHOUSE CORTEX_WH RESUME IF SUSPENDED").collect()
 
 
 def get_column_specification():
+    session = get_active_session()
     result = session.sql(
         f"DESC CORTEX SEARCH SERVICE {DB}.{SCHEMA}.{SERVICE}"
     ).collect()[0]
@@ -121,10 +122,30 @@ def create_filter_object(attributes):
     for col, values in attributes.items():
         if values:
             or_values = [{"@eq": {col: v}} for v in values]
-            clauses.append({"
+            clauses.append({"@or": or_values})
+
+    if clauses:
+        return {"@and": clauses}
+    return {}
 
 
+def main():
+    init_layout()
+    get_column_specification()
+    init_attribute_selection()
+    init_limit_input()
+    init_search_input()
+
+    if not st.session_state.query:
+        return
+
+    results = query_cortex_search_service(
+        st.session_state.query,
+        filter_object=create_filter_object(st.session_state.attributes)
+    )
+    display_search_results(results)
 
 
-
-
+if __name__ == "__main__":
+    st.set_page_config(page_title="Cortex AI Search", layout="wide")
+    main()
