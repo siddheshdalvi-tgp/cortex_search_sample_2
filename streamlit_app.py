@@ -56,11 +56,9 @@ try:
     
     def query_cortex_search_service(query, filter_object={}):
         filter_json = filter_object if filter_object else {}
-        # Use Snowpark's DataFrame API for safer injection or format JSON properly
+        # Escape single quotes in the filter JSON string
         filter_json_str = str(filter_json).replace("'", "''") 
         
-        # 1. REMOVED the unexpected LIMIT argument from CORTEX_SEARCH_SEARCH
-        # 2. ADDED a standard SQL LIMIT clause at the end
         sql = f"""
             SELECT *
             FROM TABLE(CORTEX_SEARCH_SEARCH(
@@ -70,9 +68,6 @@ try:
             ))
             LIMIT {st.session_state.limit} 
         """
-        # NOTE: It's best practice to use session.table_function("CORTEX_SEARCH_SEARCH", ...)
-        # for table functions in Snowpark, but the raw SQL approach with a LIMIT clause
-        # is the most direct fix for this error.
         return session.sql(sql).collect()
     
     
@@ -157,6 +152,7 @@ except Error as e:
     st.error(f"🚨 Snowflake Error: {e}")
 except Exception as e:
     st.error(f"⚠️ General Error: {type(e).__name__}: {e}")
+
 
 
 
