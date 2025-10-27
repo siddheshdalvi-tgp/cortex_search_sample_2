@@ -56,12 +56,17 @@ try:
     
     def query_cortex_search_service(query, filter_object={}):
         filter_json = filter_object if filter_object else {}
-        # Escape single quotes in the filter JSON string
+        
+        # 1. Escape single quotes in the filter JSON string to prevent SQL injection issues
+        #    This is crucial because the JSON string is wrapped in single quotes in the SQL.
         filter_json_str = str(filter_json).replace("'", "''") 
         
+        # 2. Use the correct table function name: SEARCH
+        # 3. Use the correct syntax: TABLE(SEARCH(...))
+        # 4. Apply the LIMIT clause outside the SEARCH function, as it's not an argument
         sql = f"""
             SELECT *
-            FROM TABLE(CORTEX_SEARCH_SEARCH(
+            FROM TABLE(SEARCH(
                 '{DB}.{SCHEMA}.{SERVICE}',
                 '{query}',
                 PARSE_JSON('{filter_json_str}')
@@ -69,7 +74,6 @@ try:
             LIMIT {st.session_state.limit} 
         """
         return session.sql(sql).collect()
-    
     
     @st.cache_data
     def distinct_values_for_attribute(col_name):
@@ -152,6 +156,7 @@ except Error as e:
     st.error(f"🚨 Snowflake Error: {e}")
 except Exception as e:
     st.error(f"⚠️ General Error: {type(e).__name__}: {e}")
+
 
 
 
