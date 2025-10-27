@@ -17,6 +17,8 @@ def create_session():
     }).create()
     return session
 
+session = create_session()
+
 # Constants
 DB = "CORTEX_DEMO_DB"
 SCHEMA = "PUBLIC"
@@ -137,4 +139,5 @@ def main():
 if __name__ == "__main__":
     st.set_page_config(page_title="Cortex AI Search", layout="wide")
     main()
+
 
