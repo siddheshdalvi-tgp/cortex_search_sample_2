@@ -41,7 +41,7 @@ try:
         #session = get_active_session()
         # session = create_session()
         result = session.sql(
-            f"DESC CORTEX SEARCH SERVICE {DB}.{SCHEMA}.{SERVICE}"
+            f"DESCRIBE CORTEX SEARCH SERVICE {DB}.{SCHEMA}.{SERVICE}"
         ).collect()[0]
     
         st.session_state.search_column = result.search_column
@@ -149,6 +149,7 @@ except Error as e:
     st.error(f"🚨 Snowflake Error: {e}")
 except Exception as e:
     st.error(f"⚠️ General Error: {type(e).__name__}: {e}")
+
 
 
 
