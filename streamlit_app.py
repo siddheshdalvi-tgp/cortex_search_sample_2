@@ -1,7 +1,7 @@
 import streamlit as st
 from snowflake.snowpark import Session
 from snowflake.connector.errors import Error
-#from snowflake.core import Root
+from snowflake.core import Root
 #from snowflake.snowpark.context import get_active_session
 from snowflake.snowpark import Session
 
@@ -152,6 +152,7 @@ except Error as e:
     st.error(f"🚨 Snowflake Error: {e}")
 except Exception as e:
     st.error(f"⚠️ General Error: {type(e).__name__}: {e}")
+
 
 
 
