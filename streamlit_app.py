@@ -52,7 +52,7 @@ try:
     
     
     def query_cortex_search_service(query, filter_object={}):
-        session = get_active_session()
+        # session = get_active_session()
         cortex_service = (
             Root(session)
             .databases[DB]
@@ -71,7 +71,7 @@ try:
     
     @st.cache_data
     def distinct_values_for_attribute(col_name):
-        session = get_active_session()
+        # session = get_active_session()
         values = session.sql(
             f"SELECT DISTINCT {col_name} AS VALUE FROM {BASE_TABLE}"
         ).collect()
@@ -150,6 +150,7 @@ except Error as e:
     st.error(f"🚨 Snowflake Error: {e}")
 except Exception as e:
     st.error(f"⚠️ General Error: {type(e).__name__}: {e}")
+
 
 
 
