@@ -1,5 +1,7 @@
 streamlit
 snowflake-connector-python
+from snowflake.core import Root
 snowflake-snowpark-python
 snowflake.core
 pandas
+
