@@ -1,13 +1,14 @@
-# ⚠️ WARNING: DO NOT USE THIS FOR PRODUCTION. THIS IS FOR DEMONSTRATION ONLY.
+# ⚠️ WARNING: DO NOT USE THIS FOR PRODUCTION. This file now demonstrates 
+# how to use 'externalbrowser' authentication, which is safer than hardcoding a password.
 import streamlit as st
 from snowflake.snowpark import Session
 
-st.title("Snowpark Connection Test (Hardcoded Credentials)")
+st.title("Snowpark Connection Test (Hardcoded Credentials - Using External Browser)")
 
 # Hardcoded credentials
 ACCOUNT = "ld31269.ap-south-1"
 USER = "SIDDHESH3PILLARGLOBAL"
-PASSWORD = "QwertyQwerty@456" # EXPOSED
+# ⚠️ Removed PASSWORD for externalbrowser authentication (It is not needed)
 ROLE = "CORTEX_APP_ROLE"
 WAREHOUSE = "CORTEX_WH"
 DATABASE = "CORTEX_DEMO_DB"
@@ -18,7 +19,8 @@ def create_hardcoded_session():
     connection_params = {
         "account": ACCOUNT,
         "user": USER,
-        "password": PASSWORD,
+        # 💡 Add the authenticator parameter for secure login flow
+        "authenticator": "externalbrowser",
         "role": ROLE,
         "warehouse": WAREHOUSE,
         "database": DATABASE,
@@ -29,12 +31,13 @@ def create_hardcoded_session():
 
 # --- Main Logic ---
 
-session = create_hardcoded_session()
+st.info("A browser window may open asking you to log into Snowflake. Please authorize the connection there.")
 
 try:
+    session = create_hardcoded_session()
     session.sql("SELECT CURRENT_USER()").collect()
-    st.success("✅ Snowflake connection successful with hardcoded credentials!")
-    st.warning("⚠️ SECURITY WARNING: Your password is visible in the source code. Please switch back to using `st.secrets`.")
+    st.success("✅ Snowflake connection successful with external browser authentication!")
+    st.warning("⚠️ SECURITY NOTE: The credentials are still hardcoded, but external browser authentication is generally more robust than a static password.")
 except Exception as e:
     st.error("❌ Snowflake connection failed!")
     st.exception(e)
