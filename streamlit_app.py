@@ -33,3 +33,4 @@ try:
 except Exception as e:
     st.error("❌ Snowflake connection failed!")
     st.error(e)
+
