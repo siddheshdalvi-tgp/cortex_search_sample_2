@@ -5,7 +5,7 @@ from snowflake.snowpark.context import get_active_session
 from snowflake.snowpark import Session
 
 # Hardcoded credentials instead of secrets
-ACCOUNT = "OBIMSEL-PZ16899"
+ACCOUNT = "PZ16899"
 USER = "siddhesh3pillarglobal"
 PASSWORD = "QwertyQwerty@456"
 ROLE = "CORTEX_APP_ROLE"
@@ -122,6 +122,7 @@ def create_filter_object(attributes):
         if values:
             or_values = [{"@eq": {col: v}} for v in values]
             clauses.append({"
+
 
 
 
