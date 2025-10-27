@@ -5,7 +5,7 @@ from snowflake.snowpark.context import get_active_session
 from snowflake.snowpark import Session
 
 # Direct connection parameters (replace with your actual values)
-ACCOUNT = "ld31269.ap-south-1.aws"  # Fully qualified Snowflake account
+ACCOUNT = "OBIMSEL-PZ16899.snowflakecomputing.com"  # Fully qualified Snowflake account
 USER = "SIDDHESH3PILLARGLOBAL"
 PASSWORD = "YOUR_PASSWORD"
 ROLE = "CORTEX_APP_ROLE"
@@ -123,3 +123,4 @@ def create_filter_object(attributes):
         if values:
             or_values = [{"@eq": {col: v}} for v in values]
             clauses.append({"
+
