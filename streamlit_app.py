@@ -2,25 +2,28 @@ import streamlit as st
 from snowflake.snowpark import Session
 from snowflake.connector.errors import Error
 
-@st.cache_data
-def create_session():
-    try:
-        secrets = st.secrets["snowflake"]
-        connection_params = {
-            "account": secrets.get("account"),
-            "user": secrets.get("user"),
-            "password": secrets.get("password"),
-            "role": secrets.get("role"),
-            "warehouse": secrets.get("warehouse"),
-            "database": secrets.get("database"),
-            "schema": secrets.get("schema")
-        }
-        session = Session.builder.configs(connection_params).create()
-        return session
+st.title("🔍 Snowflake Connectivity Test")
 
-    except Error as e:
-        st.error(f"Snowflake Connection Error: {e}", icon="🚨")
-        raise
-    except Exception as e:
-        st.error(f"General Error: {type(e).__name__}: {e}", icon="⚠️")
-        raise
+st.write("Attempting to connect to Snowflake...")
+
+try:
+    sf = st.secrets["snowflake"]
+    params = {
+        "account": sf.get("account"),
+        "user": sf.get("user"),
+        "password": sf.get("password"),
+        "role": sf.get("role"),
+        "warehouse": sf.get("warehouse"),
+        "database": sf.get("database"),
+        "schema": sf.get("schema")
+    }
+    session = Session.builder.configs(params).create()
+    st.success("✅ Connected Successfully!")
+
+    result = session.sql("SELECT CURRENT_VERSION()").collect()
+    st.write("Snowflake Version:", result[0][0])
+
+except Error as e:
+    st.error(f"🚨 Snowflake Error: {e}")
+except Exception as e:
+    st.error(f"⚠️ Gener
